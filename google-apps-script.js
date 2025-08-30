@@ -60,6 +60,8 @@ function doPost(e) {
     const result = saveToSheet(data);
     
     if (result.success) {
+      // Debug: Log the data being passed to email function
+      console.log('Data for email:', JSON.stringify(data));
       // Send confirmation email (optional)
       sendConfirmationEmail(data);
       
@@ -198,6 +200,12 @@ function setupSheet(sheet) {
  */
 function sendConfirmationEmail(data) {
   try {
+    // Check if data exists and has required properties
+    if (!data || !data.attendance || !data.fullName || !data.email) {
+      console.log('Skipping email: missing required data');
+      return;
+    }
+    
     // Only send if attending
     if (data.attendance !== 'Yes') {
       return;
