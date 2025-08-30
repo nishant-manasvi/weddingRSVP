@@ -68,6 +68,9 @@ document.addEventListener('DOMContentLoaded', function() {
         // Show loading state
         setLoadingState(true);
         
+        // Declare data variable outside try block so it's accessible in catch
+        let data;
+        
         try {
             // Gather form data
             const form_data = new FormData(form);
@@ -78,7 +81,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 selectedEvents.push(checkbox.value);
             });
             
-            const data = {
+            data = {
                 fullName: form_data.get('fullName'),
                 attendance: form_data.get('attendance'),
                 numberAttending: form_data.get('attendance') === 'No' ? '0' : form_data.get('numberAttending'),
@@ -133,6 +136,11 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             if (result && result.success) {
+                // Send confirmation email if attending
+                if (data.attendance === 'Yes') {
+                    sendConfirmationEmail(data);
+                }
+                
                 // Show success message
                 showSuccessMessage();
                 // Reset form
@@ -156,7 +164,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log('CORS error detected, but data may have been saved successfully');
                 
                 // Send confirmation email if attending and EmailJS is configured
-                if (data.attendance === 'Yes') {
+                if (data && data.attendance === 'Yes') {
                     sendConfirmationEmail(data);
                 }
                 
