@@ -2,6 +2,13 @@
 // Replace 'YOUR_GOOGLE_APPS_SCRIPT_URL' with your actual Google Apps Script web app URL
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby0ATD2pM9a6NllpWqtOx8rlIKTx83zlCFNAM5JkSH5EMM2Sjys4gIoABYroK9jCWYS/exec';
 
+// EmailJS Configuration - Replace with your actual values from EmailJS dashboard
+const EMAILJS_CONFIG = {
+    PUBLIC_KEY: 'qp9AFdZ2gHxCIxOcj',  // Get from EmailJS Account → General
+    SERVICE_ID: 'service_39s89eh',          // Get from EmailJS Email Services
+    TEMPLATE_ID: 'template_alrzkiu'         // Get from EmailJS Email Templates
+};
+
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('rsvp-form');
     const submitBtn = document.getElementById('submit-btn');
@@ -14,6 +21,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const arrivalDateSection = document.getElementById('arrival-date-section');
     const arrivalDateInput = document.getElementById('arrivalDate');
     const eventsSection = document.getElementById('events-section');
+    
+    // Initialize EmailJS
+    if (typeof emailjs !== 'undefined' && EMAILJS_CONFIG.PUBLIC_KEY !== 'YOUR_EMAILJS_PUBLIC_KEY') {
+        emailjs.init(EMAILJS_CONFIG.PUBLIC_KEY);
+    }
 
     // Handle attendance radio button changes
     const attendanceRadios = document.querySelectorAll('input[name="attendance"]');
@@ -142,6 +154,12 @@ document.addEventListener('DOMContentLoaded', function() {
             if (error.message.includes('fetch') || error.message.includes('CORS') || error.message.includes('Failed to fetch')) {
                 // Show success message since the data is likely saved despite the CORS error
                 console.log('CORS error detected, but data may have been saved successfully');
+                
+                // Send confirmation email if attending and EmailJS is configured
+                if (data.attendance === 'Yes') {
+                    sendConfirmationEmail(data);
+                }
+                
                 showSuccessMessage();
                 form.reset();
                 // Reset section visibility
@@ -224,4 +242,33 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+    
+    // Email sending function using EmailJS
+    function sendConfirmationEmail(data) {
+        // Check if EmailJS is configured
+        if (typeof emailjs === 'undefined' || EMAILJS_CONFIG.PUBLIC_KEY === 'YOUR_EMAILJS_PUBLIC_KEY') {
+            console.log('EmailJS not configured, skipping email');
+            return;
+        }
+        
+        // Prepare email parameters
+        const emailParams = {
+            guest_name: data.fullName,
+            guest_email: data.email,
+            attendance: data.attendance,
+            number_attending: data.numberAttending,
+            arrival_date: data.arrivalDate || 'Not specified',
+            events_attending: data.events || 'None selected',
+            message: data.message || 'No message provided'
+        };
+        
+        // Send email
+        emailjs.send(EMAILJS_CONFIG.SERVICE_ID, EMAILJS_CONFIG.TEMPLATE_ID, emailParams)
+            .then(function(response) {
+                console.log('Confirmation email sent successfully!', response.status, response.text);
+            })
+            .catch(function(error) {
+                console.error('Failed to send confirmation email:', error);
+            });
+    }
 });
