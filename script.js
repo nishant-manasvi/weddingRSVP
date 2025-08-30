@@ -1,6 +1,6 @@
 // Wedding RSVP Form Handler
 // Replace 'YOUR_GOOGLE_APPS_SCRIPT_URL' with your actual Google Apps Script web app URL
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzhWUBkSCDGFfuYAC4GCo9XW4rGMLp-Y0yQ8WFrgT6ouiII28H5Pq_5LjppPj_SmzzT/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby0ATD2pM9a6NllpWqtOx8rlIKTx83zlCFNAM5JkSH5EMM2Sjys4gIoABYroK9jCWYS/exec';
 
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('rsvp-form');
