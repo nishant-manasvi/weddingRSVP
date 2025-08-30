@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         try {
             // Gather form data
-            const formData = new FormData(form);
+            const form_data = new FormData(form);
             
             // Get selected events
             const selectedEvents = [];
@@ -67,13 +67,13 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             
             const data = {
-                fullName: formData.get('fullName'),
-                attendance: formData.get('attendance'),
-                numberAttending: formData.get('attendance') === 'No' ? '0' : formData.get('numberAttending'),
-                arrivalDate: formData.get('attendance') === 'No' ? '' : formData.get('arrivalDate'),
-                events: formData.get('attendance') === 'No' ? '' : selectedEvents.join(', '),
-                email: formData.get('email'),
-                message: formData.get('message') || ''
+                fullName: form_data.get('fullName'),
+                attendance: form_data.get('attendance'),
+                numberAttending: form_data.get('attendance') === 'No' ? '0' : form_data.get('numberAttending'),
+                arrivalDate: form_data.get('attendance') === 'No' ? '' : form_data.get('arrivalDate'),
+                events: form_data.get('attendance') === 'No' ? '' : selectedEvents.join(', '),
+                email: form_data.get('email'),
+                message: form_data.get('message') || ''
             };
             
             // Validate required fields
