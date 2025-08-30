@@ -22,8 +22,8 @@ const SHEET_NAME = 'RSVP Responses'; // Name of the sheet tab
  */
 function doPost(e) {
   try {
-    // Parse the incoming JSON data
-    const data = JSON.parse(e.postData.contents);
+    // Parse the incoming form data
+    const data = e.parameter || {};
     
     // Validate required fields
     if (!data.fullName || !data.attendance || !data.email) {
@@ -123,19 +123,6 @@ function doGet(e) {
     });
 }
 
-/**
- * Handle OPTIONS requests (CORS preflight)
- */
-function doOptions(e) {
-  return ContentService
-    .createTextOutput('')
-    .setHeaders({
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type',
-      'Access-Control-Max-Age': '86400'
-    });
-}
 
 /**
  * Save RSVP data to Google Sheet

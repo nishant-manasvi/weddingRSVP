@@ -1,6 +1,6 @@
 // Wedding RSVP Form Handler
 // Replace 'YOUR_GOOGLE_APPS_SCRIPT_URL' with your actual Google Apps Script web app URL
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx6rYgemNHUxw6oRgG05PgwKa9KPGbEL01WirsedWa51xB9UEaGlehO06JI_1fVxKfM/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzhWUBkSCDGFfuYAC4GCo9XW4rGMLp-Y0yQ8WFrgT6ouiII28H5Pq_5LjppPj_SmzzT/exec';
 
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('rsvp-form');
@@ -93,14 +93,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 throw new Error('Please select at least one event you will attend');
             }
             
-            // Submit to Google Apps Script
+            // Submit to Google Apps Script using form data to avoid CORS preflight
+            const formData = new URLSearchParams();
+            Object.keys(data).forEach(key => {
+                formData.append(key, data[key]);
+            });
+            
             const response = await fetch(SCRIPT_URL, {
                 method: 'POST',
-                mode: 'cors',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data)
+                body: formData
             });
             
             if (!response.ok) {
