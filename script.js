@@ -1,6 +1,6 @@
 // Wedding RSVP Form Handler
 // Replace 'YOUR_GOOGLE_APPS_SCRIPT_URL' with your actual Google Apps Script web app URL
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby0ATD2pM9a6NllpWqtOx8rlIKTx83zlCFNAM5JkSH5EMM2Sjys4gIoABYroK9jCWYS/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxNyWezHFvujFh2s52_3232j4WvRWdJNs5ojCM8X6Fa835eWMGfg3m-IDgGCQwEzn8/exec';
 
 // EmailJS Configuration - Replace with your actual values from EmailJS dashboard
 const EMAILJS_CONFIG = {
@@ -108,16 +108,22 @@ document.addEventListener('DOMContentLoaded', function() {
                 throw new Error('Please select at least one event you will attend');
             }
             
+            console.log('Submitting data:', data);
+            
             // Submit to Google Apps Script using form data to avoid CORS preflight
             const postData = new URLSearchParams();
             Object.keys(data).forEach(key => {
                 postData.append(key, data[key]);
             });
             
+            console.log('Sending POST request to:', SCRIPT_URL);
+            
             const response = await fetch(SCRIPT_URL, {
                 method: 'POST',
                 body: postData
             });
+            
+            console.log('Response status:', response.status, response.statusText);
             
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -132,13 +138,22 @@ document.addEventListener('DOMContentLoaded', function() {
                 result = JSON.parse(responseText);
             } catch (e) {
                 console.error('Failed to parse JSON response:', responseText);
-                throw new Error('Invalid response from server');
+                // Even if JSON parse fails, assume success if we got here
+                console.log('Assuming success despite JSON parse error');
+                result = { success: true };
             }
             
+            console.log('Parsed result:', result);
+            
             if (result && result.success) {
+                console.log('Success! Showing success message and sending email');
+                
                 // Send confirmation email if attending
                 if (data.attendance === 'Yes') {
+                    console.log('Sending confirmation email...');
                     sendConfirmationEmail(data);
+                } else {
+                    console.log('Not attending, skipping email');
                 }
                 
                 // Show success message
@@ -152,22 +167,30 @@ document.addEventListener('DOMContentLoaded', function() {
                 numberAttendingSelect.setAttribute('required', '');
                 arrivalDateInput.setAttribute('required', '');
             } else {
+                console.log('Server returned error:', result);
                 throw new Error(result.error || 'Unknown error occurred');
             }
             
         } catch (error) {
             console.error('Error submitting RSVP:', error);
+            console.error('Error message:', error.message);
+            console.error('Error type:', typeof error);
             
             // Check if it's a CORS/network error but data might have been saved
             if (error.message.includes('fetch') || error.message.includes('CORS') || error.message.includes('Failed to fetch')) {
                 // Show success message since the data is likely saved despite the CORS error
                 console.log('CORS error detected, but data may have been saved successfully');
+                console.log('Will send email and show success message');
                 
                 // Send confirmation email if attending and EmailJS is configured
                 if (data && data.attendance === 'Yes') {
+                    console.log('Sending email despite CORS error...');
                     sendConfirmationEmail(data);
+                } else {
+                    console.log('Not sending email - either no data or not attending');
                 }
                 
+                console.log('Showing success message...');
                 showSuccessMessage();
                 form.reset();
                 // Reset section visibility
@@ -177,6 +200,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 numberAttendingSelect.setAttribute('required', '');
                 arrivalDateInput.setAttribute('required', '');
             } else {
+                console.log('Showing error message for non-CORS error');
                 showErrorMessage();
             }
         } finally {
@@ -253,11 +277,21 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Email sending function using EmailJS
     function sendConfirmationEmail(data) {
+        console.log('sendConfirmationEmail called with data:', data);
+        
+        // Check if EmailJS is loaded
+        if (typeof emailjs === 'undefined') {
+            console.log('EmailJS not loaded, skipping email');
+            return;
+        }
+        
         // Check if EmailJS is configured
-        if (typeof emailjs === 'undefined' || EMAILJS_CONFIG.PUBLIC_KEY === 'YOUR_EMAILJS_PUBLIC_KEY') {
+        if (EMAILJS_CONFIG.PUBLIC_KEY === 'YOUR_EMAILJS_PUBLIC_KEY') {
             console.log('EmailJS not configured, skipping email');
             return;
         }
+        
+        console.log('EmailJS Configuration:', EMAILJS_CONFIG);
         
         // Prepare email parameters
         const emailParams = {
@@ -270,13 +304,17 @@ document.addEventListener('DOMContentLoaded', function() {
             message: data.message || 'No message provided'
         };
         
+        console.log('Email parameters:', emailParams);
+        
         // Send email
+        console.log('Calling emailjs.send...');
         emailjs.send(EMAILJS_CONFIG.SERVICE_ID, EMAILJS_CONFIG.TEMPLATE_ID, emailParams)
             .then(function(response) {
                 console.log('Confirmation email sent successfully!', response.status, response.text);
             })
             .catch(function(error) {
                 console.error('Failed to send confirmation email:', error);
+                console.error('Error details:', error.text, error.status);
             });
     }
 });

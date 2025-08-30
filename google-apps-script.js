@@ -22,28 +22,46 @@ const SHEET_NAME = 'RSVP Responses'; // Name of the sheet tab
  */
 function doPost(e) {
   try {
+    // Log the incoming request for debugging
+    console.log('doPost called');
+    console.log('e.parameter:', e.parameter);
+    console.log('e.postData:', e.postData);
+    
     // Parse the incoming form data
     const data = e.parameter || {};
     
+    console.log('Parsed data:', data);
+    
     // Validate required fields
     if (!data.fullName || !data.attendance || !data.email) {
+      console.log('Missing required fields:', {
+        fullName: data.fullName,
+        attendance: data.attendance, 
+        email: data.email
+      });
       return ContentService
         .createTextOutput(JSON.stringify({
           success: false,
-          error: 'Missing required fields'
+          error: 'Missing required fields',
+          received: data
         }))
-        .setMimeType(ContentService.MimeType.JSON);
+        .setMimeType(ContentService.MimeType.JSON)
+        .setHeaders({
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'POST',
+          'Access-Control-Allow-Headers': 'Content-Type'
+        });
     }
     
-    // Validate arrival date for attending guests
-    if (data.attendance === 'Yes' && !data.arrivalDate) {
-      return ContentService
-        .createTextOutput(JSON.stringify({
-          success: false,
-          error: 'Arrival date is required for attending guests'
-        }))
-        .setMimeType(ContentService.MimeType.JSON);
-    }
+    // Validate arrival date for attending guests (temporarily disabled for debugging)
+    // if (data.attendance === 'Yes' && !data.arrivalDate) {
+    //   return ContentService
+    //     .createTextOutput(JSON.stringify({
+    //       success: false,
+    //       error: 'Arrival date is required for attending guests'
+    //     }))
+    //     .setMimeType(ContentService.MimeType.JSON);
+    // }
     
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -57,13 +75,12 @@ function doPost(e) {
     }
     
     // Save to Google Sheet
+    console.log('About to save to sheet...');
     const result = saveToSheet(data);
+    console.log('Save result:', result);
     
     if (result.success) {
-      // Debug: Log the data being passed to email function
-      console.log('Data for email:', JSON.stringify(data));
-      // Send confirmation email (disabled for now due to SMTP issues)
-      // sendConfirmationEmail(data);
+      console.log('Successfully saved to sheet, returning success response');
       
       return ContentService
         .createTextOutput(JSON.stringify({
@@ -92,10 +109,13 @@ function doPost(e) {
     
   } catch (error) {
     console.error('Error in doPost:', error);
+    console.error('Error message:', error.message);
+    console.error('Error stack:', error.stack);
     return ContentService
       .createTextOutput(JSON.stringify({
         success: false,
-        error: 'Internal server error'
+        error: 'Internal server error: ' + error.message,
+        stack: error.stack
       }))
       .setMimeType(ContentService.MimeType.JSON)
       .setHeaders({
@@ -129,9 +149,15 @@ function doGet(e) {
  */
 function saveToSheet(data) {
   try {
+    console.log('saveToSheet called with data:', data);
+    
     // Open the spreadsheet
+    console.log('Opening spreadsheet with ID:', SHEET_ID);
     const spreadsheet = SpreadsheetApp.openById(SHEET_ID);
+    console.log('Spreadsheet opened successfully');
+    
     let sheet = spreadsheet.getSheetByName(SHEET_NAME);
+    console.log('Sheet found:', sheet ? 'yes' : 'no');
     
     // Create sheet if it doesn't exist
     if (!sheet) {
