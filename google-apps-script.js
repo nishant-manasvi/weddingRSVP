@@ -62,8 +62,8 @@ function doPost(e) {
     if (result.success) {
       // Debug: Log the data being passed to email function
       console.log('Data for email:', JSON.stringify(data));
-      // Send confirmation email (optional)
-      sendConfirmationEmail(data);
+      // Send confirmation email (disabled for now due to SMTP issues)
+      // sendConfirmationEmail(data);
       
       return ContentService
         .createTextOutput(JSON.stringify({

@@ -108,9 +108,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             
-            const result = await response.json();
+            // Log response for debugging
+            const responseText = await response.text();
+            console.log('Response from server:', responseText);
             
-            if (result.success) {
+            let result;
+            try {
+                result = JSON.parse(responseText);
+            } catch (e) {
+                console.error('Failed to parse JSON response:', responseText);
+                throw new Error('Invalid response from server');
+            }
+            
+            if (result && result.success) {
                 // Show success message
                 showSuccessMessage();
                 // Reset form
