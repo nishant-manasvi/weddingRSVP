@@ -124,6 +124,7 @@ function saveToSheet(data) {
       data.attendance,            // Attendance (Yes/No)
       data.numberAttending || 0,  // Number Attending
       data.arrivalDate || '',     // Arrival Date
+      data.events || '',          // Events Attending
       data.email,                 // Email
       data.message || ''          // Message
     ];
@@ -161,6 +162,7 @@ function setupSheet(sheet) {
     'Attendance',
     'Number Attending',
     'Arrival Date',
+    'Events Attending',
     'Email',
     'Message'
   ];
@@ -180,8 +182,9 @@ function setupSheet(sheet) {
   sheet.setColumnWidth(3, 100); // Attendance
   sheet.setColumnWidth(4, 120); // Number Attending
   sheet.setColumnWidth(5, 120); // Arrival Date
-  sheet.setColumnWidth(6, 250); // Email
-  sheet.setColumnWidth(7, 300); // Message
+  sheet.setColumnWidth(6, 300); // Events Attending
+  sheet.setColumnWidth(7, 250); // Email
+  sheet.setColumnWidth(8, 300); // Message
   
   // Freeze the header row
   sheet.setFrozenRows(1);
@@ -211,6 +214,7 @@ RSVP Details:
 - Attending: ${data.attendance}
 - Number of guests: ${data.numberAttending}
 - Arrival date: ${data.arrivalDate}
+- Events attending: ${data.events || 'None specified'}
 - Email: ${data.email}
 ${data.message ? `- Message: ${data.message}` : ''}
 
@@ -248,6 +252,7 @@ function testScript() {
     attendance: 'Yes',
     numberAttending: '2',
     arrivalDate: '2024-06-15',
+    events: 'Haldi Function, Reception',
     email: 'test@example.com',
     message: 'This is a test submission'
   };

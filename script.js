@@ -13,23 +13,30 @@ document.addEventListener('DOMContentLoaded', function() {
     const numberAttendingSelect = document.getElementById('numberAttending');
     const arrivalDateSection = document.getElementById('arrival-date-section');
     const arrivalDateInput = document.getElementById('arrivalDate');
+    const eventsSection = document.getElementById('events-section');
 
     // Handle attendance radio button changes
     const attendanceRadios = document.querySelectorAll('input[name="attendance"]');
     attendanceRadios.forEach(radio => {
         radio.addEventListener('change', function() {
             if (this.value === 'No') {
-                // Hide number attending and arrival date sections if not attending
+                // Hide sections if not attending
                 numberAttendingSection.style.display = 'none';
                 arrivalDateSection.style.display = 'none';
+                eventsSection.style.display = 'none';
                 numberAttendingSelect.removeAttribute('required');
                 arrivalDateInput.removeAttribute('required');
                 numberAttendingSelect.value = '0';
                 arrivalDateInput.value = '';
+                // Uncheck all event checkboxes
+                document.querySelectorAll('input[name="events"]:checked').forEach(checkbox => {
+                    checkbox.checked = false;
+                });
             } else {
-                // Show number attending and arrival date sections if attending
+                // Show sections if attending
                 numberAttendingSection.style.display = 'block';
                 arrivalDateSection.style.display = 'block';
+                eventsSection.style.display = 'block';
                 numberAttendingSelect.setAttribute('required', '');
                 arrivalDateInput.setAttribute('required', '');
                 numberAttendingSelect.value = '';
@@ -52,11 +59,19 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             // Gather form data
             const formData = new FormData(form);
+            
+            // Get selected events
+            const selectedEvents = [];
+            document.querySelectorAll('input[name="events"]:checked').forEach(checkbox => {
+                selectedEvents.push(checkbox.value);
+            });
+            
             const data = {
                 fullName: formData.get('fullName'),
                 attendance: formData.get('attendance'),
                 numberAttending: formData.get('attendance') === 'No' ? '0' : formData.get('numberAttending'),
                 arrivalDate: formData.get('attendance') === 'No' ? '' : formData.get('arrivalDate'),
+                events: formData.get('attendance') === 'No' ? '' : selectedEvents.join(', '),
                 email: formData.get('email'),
                 message: formData.get('message') || ''
             };
@@ -72,6 +87,10 @@ document.addEventListener('DOMContentLoaded', function() {
             
             if (data.attendance === 'Yes' && (!data.arrivalDate || data.arrivalDate === '')) {
                 throw new Error('Please select your arrival date');
+            }
+            
+            if (data.attendance === 'Yes' && selectedEvents.length === 0) {
+                throw new Error('Please select at least one event you will attend');
             }
             
             // Submit to Google Apps Script
@@ -95,9 +114,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 showSuccessMessage();
                 // Reset form
                 form.reset();
-                // Reset number attending and arrival date section visibility
+                // Reset section visibility
                 numberAttendingSection.style.display = 'block';
                 arrivalDateSection.style.display = 'block';
+                eventsSection.style.display = 'block';
                 numberAttendingSelect.setAttribute('required', '');
                 arrivalDateInput.setAttribute('required', '');
             } else {

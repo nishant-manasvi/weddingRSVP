@@ -5,8 +5,9 @@ A beautiful, mobile-optimized RSVP website for your wedding that saves responses
 ## 🌟 Features
 
 - **Mobile-First Design**: Optimized for all screen sizes with elegant wedding-appropriate styling
+- **Event Selection**: Guests can select which specific wedding events they'll attend
 - **Real-time Validation**: Form validation with helpful error messages
-- **Google Sheets Integration**: Automatic saving of RSVP responses
+- **Google Sheets Integration**: Automatic saving of RSVP responses with event tracking
 - **Confirmation Emails**: Optional automated email confirmations for guests
 - **Responsive Design**: Works perfectly on phones, tablets, and desktops
 
@@ -21,11 +22,16 @@ A beautiful, mobile-optimized RSVP website for your wedding that saves responses
 
 ### Step 1: Customize the HTML
 
-1. Open `index.html` and replace the placeholder text:
-   - `[Bride] & [Groom]` - Replace with your names
-   - `[Wedding Date]` - Replace with your wedding date
-   - `[Wedding Venue, City]` - Replace with your venue information
-   - `[your-email@example.com]` - Replace with your contact email
+1. Open `index.html` and update:
+   - **Names**: Already set to "Manasvi & Nishant"
+   - **Date**: Already set to "26th October 2025"
+   - **Main Venue**: Already set to Shree Rooplaxmi's Castle
+   - **Contact Email**: Update `nishantsinghsiddhu@yahoo.com` if needed
+   - **Event Details**: Already configured with 4 events:
+     - Haldi Function (25th Oct, 12 PM, Poolside)
+     - Sangeet & Engagement (25th Oct, 6 PM, Banquet Hall)
+     - Anand Karaj (26th Oct, 9 AM, Gurdwara Sri Nanak Darbar)
+     - Reception (26th Oct, 6 PM, Lawn)
 
 ### Step 2: Set Up Google Sheets Backend
 
@@ -41,7 +47,7 @@ A beautiful, mobile-optimized RSVP website for your wedding that saves responses
 1. Go to [Google Apps Script](https://script.google.com)
 2. Click "New Project"
 3. Delete the default code and paste the contents of `google-apps-script.js`
-4. Replace `YOUR_GOOGLE_SHEET_ID_HERE` with your actual Sheet ID
+4. Replace `YOUR_GOOGLE_SHEET_ID_HERE` with your actual Sheet ID (currently set to: `1ueG5iJX4i2RylXby6hlEkHMA2dIlkfI_bEE-_XbuDi0`)
 5. Customize the bride and groom names in the email template (search for `[Bride] & [Groom]`)
 6. Save the project with a name like "Wedding RSVP Backend"
 
@@ -74,12 +80,14 @@ A beautiful, mobile-optimized RSVP website for your wedding that saves responses
 
 ### Step 4: Host Your Website
 
-#### Option 1: GitHub Pages (Recommended)
-1. Create a new GitHub repository
-2. Upload your files (`index.html`, `script.js`, `README.md`)
-3. Go to repository Settings → Pages
-4. Select "Deploy from a branch" and choose "main"
-5. Your site will be available at `https://yourusername.github.io/repository-name`
+#### GitHub Pages Deployment (Current Setup)
+1. **Repository**: Already set up at `https://github.com/nishant-manasvi/weddingRSVP.git`
+2. **Files**: All files are ready (`index.html`, `script.js`, `google-apps-script.js`, `README.md`, `CLAUDE.md`)
+3. **Deploy to GitHub Pages**:
+   - Go to your repository Settings → Pages
+   - Select "Deploy from a branch" and choose "main"
+   - Your site will be available at `https://nishant-manasvi.github.io/weddingRSVP`
+4. **After deployment**: Update `SCRIPT_URL` in `script.js` with your Google Apps Script URL
 
 #### Option 2: Netlify
 1. Go to [Netlify](https://netlify.com)
@@ -127,6 +135,8 @@ Your Google Sheet will automatically populate with:
 - **Name**: Guest's full name
 - **Attendance**: Yes/No
 - **Number Attending**: Number of people in their party
+- **Arrival Date**: When they plan to arrive
+- **Events Attending**: Comma-separated list of selected events (Haldi Function, Sangeet and Engagement, Anand Karaj, Reception)
 - **Email**: Guest's email address
 - **Message**: Any message they left
 
@@ -159,6 +169,12 @@ You can sort, filter, and analyze this data directly in Google Sheets.
 3. Check that the viewport meta tag is present
 
 ## 💡 Additional Features
+
+Current implementation includes:
+- ✅ **Event Selection**: Guests can choose which events to attend
+- ✅ **Arrival Date Tracking**: Know when guests will arrive
+- ✅ **Mobile-optimized design** with wedding theme colors
+- ✅ **Google Maps integration** for venue locations
 
 You can extend this RSVP system with:
 - **Dietary restrictions field**
