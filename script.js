@@ -274,47 +274,47 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
-    
-    // Email sending function using EmailJS
-    function sendConfirmationEmail(data) {
-        console.log('sendConfirmationEmail called with data:', data);
-        
-        // Check if EmailJS is loaded
-        if (typeof emailjs === 'undefined') {
-            console.log('EmailJS not loaded, skipping email');
-            return;
-        }
-        
-        // Check if EmailJS is configured
-        if (EMAILJS_CONFIG.PUBLIC_KEY === 'YOUR_EMAILJS_PUBLIC_KEY') {
-            console.log('EmailJS not configured, skipping email');
-            return;
-        }
-        
-        console.log('EmailJS Configuration:', EMAILJS_CONFIG);
-        
-        // Prepare email parameters
-        const emailParams = {
-            guest_name: data.fullName,
-            guest_email: data.email,
-            attendance: data.attendance,
-            number_attending: data.numberAttending,
-            arrival_date: data.arrivalDate || 'Not specified',
-            events_attending: data.events || 'None selected',
-            message: data.message || 'No message provided'
-        };
-        
-        console.log('Email parameters:', emailParams);
-        
-        // Send email
-        console.log('Calling emailjs.send...');
-        emailjs.send(EMAILJS_CONFIG.SERVICE_ID, EMAILJS_CONFIG.TEMPLATE_ID, emailParams)
-            .then(function(response) {
-                console.log('Confirmation email sent successfully!', response.status, response.text);
-            })
-            .catch(function(error) {
-                console.error('Failed to send confirmation email:', error);
-                console.error('Error details:', error.text, error.status);
-            });
-    }
 });
+
+// Email sending function using EmailJS (moved outside DOMContentLoaded)
+function sendConfirmationEmail(data) {
+    console.log('sendConfirmationEmail called with data:', data);
+    
+    // Check if EmailJS is loaded
+    if (typeof emailjs === 'undefined') {
+        console.log('EmailJS not loaded, skipping email');
+        return;
+    }
+    
+    // Check if EmailJS is configured
+    if (EMAILJS_CONFIG.PUBLIC_KEY === 'YOUR_EMAILJS_PUBLIC_KEY') {
+        console.log('EmailJS not configured, skipping email');
+        return;
+    }
+    
+    console.log('EmailJS Configuration:', EMAILJS_CONFIG);
+    
+    // Prepare email parameters
+    const emailParams = {
+        guest_name: data.fullName,
+        guest_email: data.email,
+        attendance: data.attendance,
+        number_attending: data.numberAttending,
+        arrival_date: data.arrivalDate || 'Not specified',
+        events_attending: data.events || 'None selected',
+        message: data.message || 'No message provided'
+    };
+    
+    console.log('Email parameters:', emailParams);
+    
+    // Send email
+    console.log('Calling emailjs.send...');
+    emailjs.send(EMAILJS_CONFIG.SERVICE_ID, EMAILJS_CONFIG.TEMPLATE_ID, emailParams)
+        .then(function(response) {
+            console.log('Confirmation email sent successfully!', response.status, response.text);
+        })
+        .catch(function(error) {
+            console.error('Failed to send confirmation email:', error);
+            console.error('Error details:', error.text, error.status);
+        });
+}
