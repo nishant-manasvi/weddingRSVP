@@ -94,14 +94,14 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             // Submit to Google Apps Script using form data to avoid CORS preflight
-            const formData = new URLSearchParams();
+            const postData = new URLSearchParams();
             Object.keys(data).forEach(key => {
-                formData.append(key, data[key]);
+                postData.append(key, data[key]);
             });
             
             const response = await fetch(SCRIPT_URL, {
                 method: 'POST',
-                body: formData
+                body: postData
             });
             
             if (!response.ok) {
